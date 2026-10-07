@@ -1,0 +1,13 @@
+{
+  "version": "1.0.0",
+  "as_of": "2025-12-31",
+  "source_url": "https://uhzz8xwe8uih5iol.public.blob.vercel-storage.com/datasets/saas-subscriptions/v1.0.0/saas-subscriptions-v1.0.0-source-csv.zip",
+  "classification": "synthetic educational data",
+  "sha256": {
+    "accounts": "5b6419f33cafadd730f5ea012cfef8bddb42fb0a354f6eeb97ec9b20234bb783",
+    "plans": "324adf1974e3d018e93e1a6a4d8618ba1dd74a90dda95e425a843e49ac6c0632",
+    "subscriptions": "dfb6963a5858acd7f708c3f189dbd3c9a62ed22e1fd89228ee239cfceb5ca671",
+    "invoices": "bca58d3f30973f77394b9d49d2d52be889408b604ffb19444c964206d1fa00e5",
+    "payments": "273785685245918d0e034c84b4f12895ccfdbb4c7f9609e84c199cc5533ea3a0"
+  }
+}

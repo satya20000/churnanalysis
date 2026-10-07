@@ -1,0 +1,1163 @@
+{
+  "name": "SaaS Revenue Intelligence",
+  "compatibilityLevel": 1600,
+  "model": {
+    "culture": "en-US",
+    "defaultPowerBIDataSourceVersion": "powerBI_V3",
+    "sourceQueryCulture": "en-US",
+    "expressions": [
+      {
+        "name": "ProjectRoot",
+        "kind": "m",
+        "expression": "\"C:/CHANGE_ME/churnanalysis\" meta [IsParameterQuery=true, Type=\"Text\", IsParameterQueryRequired=true]"
+      }
+    ],
+    "tables": [
+      {
+        "name": "DimAccount",
+        "columns": [
+          {
+            "name": "account_id",
+            "dataType": "string",
+            "sourceColumn": "account_id",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "created_at",
+            "dataType": "dateTime",
+            "sourceColumn": "created_at",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "region",
+            "dataType": "string",
+            "sourceColumn": "region",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "segment",
+            "dataType": "string",
+            "sourceColumn": "segment",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "acquisition_channel",
+            "dataType": "string",
+            "sourceColumn": "acquisition_channel",
+            "summarizeBy": "none"
+          }
+        ],
+        "partitions": [
+          {
+            "name": "DimAccount",
+            "mode": "import",
+            "source": {
+              "type": "m",
+              "expression": [
+                "let",
+                "    Source = Csv.Document(File.Contents(ProjectRoot & \"/data/raw/accounts.csv\"), [Delimiter=\",\", Encoding=65001, QuoteStyle=QuoteStyle.Csv]),",
+                "    Headers = Table.PromoteHeaders(Source, [PromoteAllScalars=true]),",
+                "    BlankDates = Table.ReplaceValue(Headers, \"\", null, Replacer.ReplaceValue, {\"created_at\"}),",
+                "    Typed = Table.TransformColumnTypes(BlankDates, {{\"account_id\", type text}, {\"created_at\", type date}, {\"region\", type text}, {\"segment\", type text}, {\"acquisition_channel\", type text}}, \"en-US\")",
+                "in",
+                "    Typed"
+              ]
+            }
+          }
+        ]
+      },
+      {
+        "name": "DimPlan",
+        "columns": [
+          {
+            "name": "plan_id",
+            "dataType": "string",
+            "sourceColumn": "plan_id",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "plan_name",
+            "dataType": "string",
+            "sourceColumn": "plan_name",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "monthly_price",
+            "dataType": "double",
+            "sourceColumn": "monthly_price",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "included_seats",
+            "dataType": "int64",
+            "sourceColumn": "included_seats",
+            "summarizeBy": "none"
+          }
+        ],
+        "partitions": [
+          {
+            "name": "DimPlan",
+            "mode": "import",
+            "source": {
+              "type": "m",
+              "expression": [
+                "let",
+                "    Source = Csv.Document(File.Contents(ProjectRoot & \"/data/raw/plans.csv\"), [Delimiter=\",\", Encoding=65001, QuoteStyle=QuoteStyle.Csv]),",
+                "    Headers = Table.PromoteHeaders(Source, [PromoteAllScalars=true]),",
+                "    BlankDates = Table.ReplaceValue(Headers, \"\", null, Replacer.ReplaceValue, {}),",
+                "    Typed = Table.TransformColumnTypes(BlankDates, {{\"plan_id\", type text}, {\"plan_name\", type text}, {\"monthly_price\", type number}, {\"included_seats\", Int64.Type}}, \"en-US\")",
+                "in",
+                "    Typed"
+              ]
+            }
+          }
+        ]
+      },
+      {
+        "name": "DimDate",
+        "columns": [
+          {
+            "name": "date",
+            "dataType": "dateTime",
+            "sourceColumn": "date",
+            "summarizeBy": "none",
+            "isKey": true
+          },
+          {
+            "name": "year",
+            "dataType": "int64",
+            "sourceColumn": "year",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "quarter",
+            "dataType": "string",
+            "sourceColumn": "quarter",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "month",
+            "dataType": "string",
+            "sourceColumn": "month",
+            "summarizeBy": "none",
+            "sortByColumn": "month_number"
+          },
+          {
+            "name": "month_number",
+            "dataType": "int64",
+            "sourceColumn": "month_number",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "month_year",
+            "dataType": "string",
+            "sourceColumn": "month_year",
+            "summarizeBy": "none",
+            "sortByColumn": "year_month_sort"
+          },
+          {
+            "name": "year_month_sort",
+            "dataType": "int64",
+            "sourceColumn": "year_month_sort",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "month_start",
+            "dataType": "dateTime",
+            "sourceColumn": "month_start",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "month_end",
+            "dataType": "dateTime",
+            "sourceColumn": "month_end",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "week",
+            "dataType": "int64",
+            "sourceColumn": "week",
+            "summarizeBy": "none"
+          }
+        ],
+        "partitions": [
+          {
+            "name": "DimDate",
+            "mode": "import",
+            "source": {
+              "type": "m",
+              "expression": [
+                "let",
+                "    Source = Csv.Document(File.Contents(ProjectRoot & \"/data/processed/dim_date.csv\"), [Delimiter=\",\", Encoding=65001, QuoteStyle=QuoteStyle.Csv]),",
+                "    Headers = Table.PromoteHeaders(Source, [PromoteAllScalars=true]),",
+                "    BlankDates = Table.ReplaceValue(Headers, \"\", null, Replacer.ReplaceValue, {\"date\", \"month_start\", \"month_end\"}),",
+                "    Typed = Table.TransformColumnTypes(BlankDates, {{\"date\", type date}, {\"year\", Int64.Type}, {\"quarter\", type text}, {\"month\", type text}, {\"month_number\", Int64.Type}, {\"month_year\", type text}, {\"year_month_sort\", Int64.Type}, {\"month_start\", type date}, {\"month_end\", type date}, {\"week\", Int64.Type}}, \"en-US\")",
+                "in",
+                "    Typed"
+              ]
+            }
+          }
+        ]
+      },
+      {
+        "name": "FactSubscription",
+        "columns": [
+          {
+            "name": "subscription_id",
+            "dataType": "string",
+            "sourceColumn": "subscription_id",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "account_id",
+            "dataType": "string",
+            "sourceColumn": "account_id",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "plan_id",
+            "dataType": "string",
+            "sourceColumn": "plan_id",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "started_at",
+            "dataType": "dateTime",
+            "sourceColumn": "started_at",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "ended_at",
+            "dataType": "dateTime",
+            "sourceColumn": "ended_at",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "mrr",
+            "dataType": "double",
+            "sourceColumn": "mrr",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "seats",
+            "dataType": "int64",
+            "sourceColumn": "seats",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "tenure_days",
+            "dataType": "int64",
+            "sourceColumn": "tenure_days",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "tenure_bucket",
+            "dataType": "string",
+            "sourceColumn": "tenure_bucket",
+            "summarizeBy": "none"
+          }
+        ],
+        "partitions": [
+          {
+            "name": "FactSubscription",
+            "mode": "import",
+            "source": {
+              "type": "m",
+              "expression": [
+                "let",
+                "    Source = Csv.Document(File.Contents(ProjectRoot & \"/data/processed/customer_analytics.csv\"), [Delimiter=\",\", Encoding=65001, QuoteStyle=QuoteStyle.Csv]),",
+                "    Headers = Table.PromoteHeaders(Source, [PromoteAllScalars=true]),",
+                "    Selected = Table.SelectColumns(Headers, {\"subscription_id\", \"account_id\", \"plan_id\", \"started_at\", \"ended_at\", \"mrr\", \"seats\", \"tenure_days\", \"tenure_bucket\"}),",
+                "    BlankDates = Table.ReplaceValue(Selected, \"\", null, Replacer.ReplaceValue, {\"started_at\", \"ended_at\"}),",
+                "    Typed = Table.TransformColumnTypes(BlankDates, {{\"subscription_id\", type text}, {\"account_id\", type text}, {\"plan_id\", type text}, {\"started_at\", type date}, {\"ended_at\", type date}, {\"mrr\", type number}, {\"seats\", Int64.Type}, {\"tenure_days\", Int64.Type}, {\"tenure_bucket\", type text}}, \"en-US\")",
+                "in",
+                "    Typed"
+              ]
+            }
+          }
+        ],
+        "measures": [
+          {
+            "name": "Active Customers",
+            "expression": "VAR d = MAX(FactMonthlySnapshot[month_end]) RETURN CALCULATE(SUM(FactMonthlySnapshot[active_customers]), KEEPFILTERS(FactMonthlySnapshot[month_end] = d))",
+            "formatString": "#,0",
+            "displayFolder": "SaaS KPIs",
+            "description": "See docs/metric_definitions.md; source classification is synthetic."
+          },
+          {
+            "name": "Beginning Customers",
+            "expression": "SUM(FactMonthlySnapshot[beginning_customers])",
+            "formatString": "#,0",
+            "displayFolder": "SaaS KPIs",
+            "description": "See docs/metric_definitions.md; source classification is synthetic."
+          },
+          {
+            "name": "New Customers",
+            "expression": "SUM(FactMonthlySnapshot[new_customers])",
+            "formatString": "#,0",
+            "displayFolder": "SaaS KPIs",
+            "description": "See docs/metric_definitions.md; source classification is synthetic."
+          },
+          {
+            "name": "Churned Customers",
+            "expression": "SUM(FactMonthlySnapshot[churned_customers])",
+            "formatString": "#,0",
+            "displayFolder": "SaaS KPIs",
+            "description": "See docs/metric_definitions.md; source classification is synthetic."
+          },
+          {
+            "name": "Customer Churn Rate",
+            "expression": "DIVIDE([Churned Customers], [Beginning Customers])",
+            "formatString": "0.00%",
+            "displayFolder": "SaaS KPIs",
+            "description": "See docs/metric_definitions.md; source classification is synthetic."
+          },
+          {
+            "name": "Customer Retention Rate",
+            "expression": "IF(NOT ISBLANK([Customer Churn Rate]), 1 - [Customer Churn Rate])",
+            "formatString": "0.00%",
+            "displayFolder": "SaaS KPIs",
+            "description": "See docs/metric_definitions.md; source classification is synthetic."
+          },
+          {
+            "name": "MRR",
+            "expression": "VAR d = MAX(FactMonthlySnapshot[month_end]) RETURN CALCULATE(SUM(FactMonthlySnapshot[active_mrr]), KEEPFILTERS(FactMonthlySnapshot[month_end] = d))",
+            "formatString": "\"CU \"#,0",
+            "displayFolder": "SaaS KPIs",
+            "description": "See docs/metric_definitions.md; source classification is synthetic."
+          },
+          {
+            "name": "ARR",
+            "expression": "[MRR] * 12",
+            "formatString": "\"CU \"#,0",
+            "displayFolder": "SaaS KPIs",
+            "description": "See docs/metric_definitions.md; source classification is synthetic."
+          },
+          {
+            "name": "Beginning MRR",
+            "expression": "SUM(FactMonthlySnapshot[beginning_mrr])",
+            "formatString": "\"CU \"#,0",
+            "displayFolder": "SaaS KPIs",
+            "description": "See docs/metric_definitions.md; source classification is synthetic."
+          },
+          {
+            "name": "Churned MRR",
+            "expression": "SUM(FactMonthlySnapshot[churned_mrr])",
+            "formatString": "\"CU \"#,0",
+            "displayFolder": "SaaS KPIs",
+            "description": "See docs/metric_definitions.md; source classification is synthetic."
+          },
+          {
+            "name": "Gross Revenue Churn",
+            "expression": "DIVIDE([Churned MRR], [Beginning MRR])",
+            "formatString": "0.00%",
+            "displayFolder": "SaaS KPIs",
+            "description": "See docs/metric_definitions.md; source classification is synthetic."
+          },
+          {
+            "name": "Gross Revenue Retention",
+            "expression": "IF(NOT ISBLANK([Gross Revenue Churn]), 1 - [Gross Revenue Churn])",
+            "formatString": "0.00%",
+            "displayFolder": "SaaS KPIs",
+            "description": "See docs/metric_definitions.md; source classification is synthetic."
+          },
+          {
+            "name": "ARPA",
+            "expression": "DIVIDE([MRR], [Active Customers])",
+            "formatString": "\"CU \"#,0.00",
+            "displayFolder": "SaaS KPIs",
+            "description": "See docs/metric_definitions.md; source classification is synthetic."
+          },
+          {
+            "name": "Average Churn Tenure Days",
+            "expression": "DIVIDE(SUM(FactMonthlySnapshot[churned_tenure_days]), [Churned Customers])",
+            "formatString": "0",
+            "displayFolder": "SaaS KPIs",
+            "description": "See docs/metric_definitions.md; source classification is synthetic."
+          },
+          {
+            "name": "Payment Attempts",
+            "expression": "COUNTROWS(FactPayment)",
+            "formatString": "#,0",
+            "displayFolder": "SaaS KPIs",
+            "description": "See docs/metric_definitions.md; source classification is synthetic."
+          },
+          {
+            "name": "Failed Payments",
+            "expression": "CALCULATE(COUNTROWS(FactPayment), FactPayment[payment_status] = \"failed\")",
+            "formatString": "#,0",
+            "displayFolder": "SaaS KPIs",
+            "description": "See docs/metric_definitions.md; source classification is synthetic."
+          },
+          {
+            "name": "Succeeded Payments",
+            "expression": "CALCULATE(COUNTROWS(FactPayment), FactPayment[payment_status] = \"succeeded\")",
+            "formatString": "#,0",
+            "displayFolder": "SaaS KPIs",
+            "description": "See docs/metric_definitions.md; source classification is synthetic."
+          },
+          {
+            "name": "Failed Payment Rate",
+            "expression": "DIVIDE([Failed Payments], [Payment Attempts])",
+            "formatString": "0.00%",
+            "displayFolder": "SaaS KPIs",
+            "description": "See docs/metric_definitions.md; source classification is synthetic."
+          },
+          {
+            "name": "Accounts With Failed Payments",
+            "expression": "CALCULATE(DISTINCTCOUNT(FactPayment[account_id]), FactPayment[payment_status] = \"failed\")",
+            "formatString": "#,0",
+            "displayFolder": "SaaS KPIs",
+            "description": "See docs/metric_definitions.md; source classification is synthetic."
+          },
+          {
+            "name": "Invoiced Value",
+            "expression": "SUM(FactInvoice[amount_due])",
+            "formatString": "\"CU \"#,0",
+            "displayFolder": "SaaS KPIs",
+            "description": "See docs/metric_definitions.md; source classification is synthetic."
+          },
+          {
+            "name": "Collected Value",
+            "expression": "CALCULATE(SUM(FactPayment[amount]), FactPayment[payment_status] = \"succeeded\")",
+            "formatString": "\"CU \"#,0",
+            "displayFolder": "SaaS KPIs",
+            "description": "See docs/metric_definitions.md; source classification is synthetic."
+          },
+          {
+            "name": "Open Invoice Value",
+            "expression": "CALCULATE(SUM(FactInvoice[amount_due]), FactInvoice[invoice_status] = \"open\")",
+            "formatString": "\"CU \"#,0",
+            "displayFolder": "SaaS KPIs",
+            "description": "See docs/metric_definitions.md; source classification is synthetic."
+          },
+          {
+            "name": "MRR at Risk",
+            "expression": "VAR d = MAX(FactMonthlySnapshot[month_end]) RETURN CALCULATE(SUM(FactMonthlySnapshot[mrr_at_risk]), KEEPFILTERS(FactMonthlySnapshot[month_end] = d))",
+            "formatString": "\"CU \"#,0",
+            "displayFolder": "SaaS KPIs",
+            "description": "See docs/metric_definitions.md; source classification is synthetic."
+          },
+          {
+            "name": "Risk Accounts",
+            "expression": "VAR d = MAX(FactMonthlySnapshot[month_end]) RETURN CALCULATE(SUM(FactMonthlySnapshot[risk_accounts]), KEEPFILTERS(FactMonthlySnapshot[month_end] = d))",
+            "formatString": "#,0",
+            "displayFolder": "SaaS KPIs",
+            "description": "See docs/metric_definitions.md; source classification is synthetic."
+          },
+          {
+            "name": "Cohort Retention",
+            "expression": "DIVIDE(SUM(FactCohort[retained]), SUM(FactCohort[cohort_accounts]))",
+            "formatString": "0.0%",
+            "displayFolder": "SaaS KPIs",
+            "description": "See docs/metric_definitions.md; source classification is synthetic."
+          },
+          {
+            "name": "Landmark Churn 90d",
+            "expression": "DIVIDE(SUM(FactLandmark[churn_next90]), COUNTROWS(FactLandmark))",
+            "formatString": "0.00%",
+            "displayFolder": "SaaS KPIs",
+            "description": "See docs/metric_definitions.md; source classification is synthetic."
+          },
+          {
+            "name": "Landmark Accounts",
+            "expression": "COUNTROWS(FactLandmark)",
+            "formatString": "#,0",
+            "displayFolder": "SaaS KPIs",
+            "description": "See docs/metric_definitions.md; source classification is synthetic."
+          },
+          {
+            "name": "Latest Priority MRR",
+            "expression": "CALCULATE(SUM(FactRisk[mrr]), FactRisk[risk_flag] = 1)",
+            "formatString": "\"CU \"#,0",
+            "displayFolder": "SaaS KPIs",
+            "description": "See docs/metric_definitions.md; source classification is synthetic."
+          },
+          {
+            "name": "Priority Failed Attempts",
+            "expression": "IF(NOT ISBLANK([Latest Priority MRR]), SUM(FactRisk[failed_30d]))",
+            "formatString": "#,0",
+            "displayFolder": "SaaS KPIs",
+            "description": "See docs/metric_definitions.md; source classification is synthetic."
+          },
+          {
+            "name": "Priority Mature Balance",
+            "expression": "IF(NOT ISBLANK([Latest Priority MRR]), SUM(FactRisk[overdue_value]))",
+            "formatString": "\"CU \"#,0",
+            "displayFolder": "SaaS KPIs",
+            "description": "See docs/metric_definitions.md; source classification is synthetic."
+          },
+          {
+            "name": "Tenure Cancellations",
+            "expression": "VAR Dates = VALUES(DimDate[date]) RETURN CALCULATE(COUNTROWS(FactSubscription), TREATAS(Dates, FactSubscription[ended_at]))",
+            "formatString": "#,0"
+          }
+        ]
+      },
+      {
+        "name": "FactMonthlySnapshot",
+        "columns": [
+          {
+            "name": "subscription_id",
+            "dataType": "string",
+            "sourceColumn": "subscription_id",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "account_id",
+            "dataType": "string",
+            "sourceColumn": "account_id",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "plan_id",
+            "dataType": "string",
+            "sourceColumn": "plan_id",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "month_start",
+            "dataType": "dateTime",
+            "sourceColumn": "month_start",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "month_end",
+            "dataType": "dateTime",
+            "sourceColumn": "month_end",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "beginning_customers",
+            "dataType": "int64",
+            "sourceColumn": "beginning_customers",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "active_customers",
+            "dataType": "int64",
+            "sourceColumn": "active_customers",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "new_customers",
+            "dataType": "int64",
+            "sourceColumn": "new_customers",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "churned_customers",
+            "dataType": "int64",
+            "sourceColumn": "churned_customers",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "beginning_mrr",
+            "dataType": "double",
+            "sourceColumn": "beginning_mrr",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "active_mrr",
+            "dataType": "double",
+            "sourceColumn": "active_mrr",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "new_mrr",
+            "dataType": "double",
+            "sourceColumn": "new_mrr",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "churned_mrr",
+            "dataType": "double",
+            "sourceColumn": "churned_mrr",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "bop_churned_customers",
+            "dataType": "int64",
+            "sourceColumn": "bop_churned_customers",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "bop_churned_mrr",
+            "dataType": "double",
+            "sourceColumn": "bop_churned_mrr",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "churned_tenure_days",
+            "dataType": "double",
+            "sourceColumn": "churned_tenure_days",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "mrr_at_risk",
+            "dataType": "double",
+            "sourceColumn": "mrr_at_risk",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "risk_accounts",
+            "dataType": "int64",
+            "sourceColumn": "risk_accounts",
+            "summarizeBy": "none"
+          }
+        ],
+        "partitions": [
+          {
+            "name": "FactMonthlySnapshot",
+            "mode": "import",
+            "source": {
+              "type": "m",
+              "expression": [
+                "let",
+                "    Source = Csv.Document(Binary.Decompress(File.Contents(ProjectRoot & \"/data/processed/subscription_monthly_snapshot.csv.gz\"), Compression.GZip), [Delimiter=\",\", Encoding=65001, QuoteStyle=QuoteStyle.Csv]),",
+                "    Headers = Table.PromoteHeaders(Source, [PromoteAllScalars=true]),",
+                "    BlankDates = Table.ReplaceValue(Headers, \"\", null, Replacer.ReplaceValue, {\"month_start\", \"month_end\"}),",
+                "    Typed = Table.TransformColumnTypes(BlankDates, {{\"subscription_id\", type text}, {\"account_id\", type text}, {\"plan_id\", type text}, {\"month_start\", type date}, {\"month_end\", type date}, {\"beginning_customers\", Int64.Type}, {\"active_customers\", Int64.Type}, {\"new_customers\", Int64.Type}, {\"churned_customers\", Int64.Type}, {\"beginning_mrr\", type number}, {\"active_mrr\", type number}, {\"new_mrr\", type number}, {\"churned_mrr\", type number}, {\"bop_churned_customers\", Int64.Type}, {\"bop_churned_mrr\", type number}, {\"churned_tenure_days\", type number}, {\"mrr_at_risk\", type number}, {\"risk_accounts\", Int64.Type}}, \"en-US\")",
+                "in",
+                "    Typed"
+              ]
+            }
+          }
+        ]
+      },
+      {
+        "name": "FactInvoice",
+        "columns": [
+          {
+            "name": "invoice_id",
+            "dataType": "string",
+            "sourceColumn": "invoice_id",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "subscription_id",
+            "dataType": "string",
+            "sourceColumn": "subscription_id",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "invoice_date",
+            "dataType": "dateTime",
+            "sourceColumn": "invoice_date",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "due_date",
+            "dataType": "dateTime",
+            "sourceColumn": "due_date",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "amount_due",
+            "dataType": "double",
+            "sourceColumn": "amount_due",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "invoice_status",
+            "dataType": "string",
+            "sourceColumn": "invoice_status",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "account_id",
+            "dataType": "string",
+            "sourceColumn": "account_id",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "plan_id",
+            "dataType": "string",
+            "sourceColumn": "plan_id",
+            "summarizeBy": "none"
+          }
+        ],
+        "partitions": [
+          {
+            "name": "FactInvoice",
+            "mode": "import",
+            "source": {
+              "type": "m",
+              "expression": [
+                "let",
+                "    Source = Csv.Document(File.Contents(ProjectRoot & \"/data/processed/fact_invoice.csv\"), [Delimiter=\",\", Encoding=65001, QuoteStyle=QuoteStyle.Csv]),",
+                "    Headers = Table.PromoteHeaders(Source, [PromoteAllScalars=true]),",
+                "    BlankDates = Table.ReplaceValue(Headers, \"\", null, Replacer.ReplaceValue, {\"invoice_date\", \"due_date\"}),",
+                "    Typed = Table.TransformColumnTypes(BlankDates, {{\"invoice_id\", type text}, {\"subscription_id\", type text}, {\"invoice_date\", type date}, {\"due_date\", type date}, {\"amount_due\", type number}, {\"invoice_status\", type text}, {\"account_id\", type text}, {\"plan_id\", type text}}, \"en-US\")",
+                "in",
+                "    Typed"
+              ]
+            }
+          }
+        ]
+      },
+      {
+        "name": "FactPayment",
+        "columns": [
+          {
+            "name": "payment_id",
+            "dataType": "string",
+            "sourceColumn": "payment_id",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "invoice_id",
+            "dataType": "string",
+            "sourceColumn": "invoice_id",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "attempted_at",
+            "dataType": "dateTime",
+            "sourceColumn": "attempted_at",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "payment_status",
+            "dataType": "string",
+            "sourceColumn": "payment_status",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "amount",
+            "dataType": "double",
+            "sourceColumn": "amount",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "subscription_id",
+            "dataType": "string",
+            "sourceColumn": "subscription_id",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "account_id",
+            "dataType": "string",
+            "sourceColumn": "account_id",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "plan_id",
+            "dataType": "string",
+            "sourceColumn": "plan_id",
+            "summarizeBy": "none"
+          }
+        ],
+        "partitions": [
+          {
+            "name": "FactPayment",
+            "mode": "import",
+            "source": {
+              "type": "m",
+              "expression": [
+                "let",
+                "    Source = Csv.Document(File.Contents(ProjectRoot & \"/data/processed/fact_payment.csv\"), [Delimiter=\",\", Encoding=65001, QuoteStyle=QuoteStyle.Csv]),",
+                "    Headers = Table.PromoteHeaders(Source, [PromoteAllScalars=true]),",
+                "    BlankDates = Table.ReplaceValue(Headers, \"\", null, Replacer.ReplaceValue, {\"attempted_at\"}),",
+                "    Typed = Table.TransformColumnTypes(BlankDates, {{\"payment_id\", type text}, {\"invoice_id\", type text}, {\"attempted_at\", type date}, {\"payment_status\", type text}, {\"amount\", type number}, {\"subscription_id\", type text}, {\"account_id\", type text}, {\"plan_id\", type text}}, \"en-US\")",
+                "in",
+                "    Typed"
+              ]
+            }
+          }
+        ]
+      },
+      {
+        "name": "FactCohort",
+        "columns": [
+          {
+            "name": "account_id",
+            "dataType": "string",
+            "sourceColumn": "account_id",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "plan_id",
+            "dataType": "string",
+            "sourceColumn": "plan_id",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "cohort",
+            "dataType": "dateTime",
+            "sourceColumn": "cohort",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "age_months",
+            "dataType": "int64",
+            "sourceColumn": "age_months",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "retained",
+            "dataType": "int64",
+            "sourceColumn": "retained",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "cohort_accounts",
+            "dataType": "int64",
+            "sourceColumn": "cohort_accounts",
+            "summarizeBy": "none"
+          }
+        ],
+        "partitions": [
+          {
+            "name": "FactCohort",
+            "mode": "import",
+            "source": {
+              "type": "m",
+              "expression": [
+                "let",
+                "    Source = Csv.Document(File.Contents(ProjectRoot & \"/data/processed/fact_cohort.csv\"), [Delimiter=\",\", Encoding=65001, QuoteStyle=QuoteStyle.Csv]),",
+                "    Headers = Table.PromoteHeaders(Source, [PromoteAllScalars=true]),",
+                "    BlankDates = Table.ReplaceValue(Headers, \"\", null, Replacer.ReplaceValue, {\"cohort\"}),",
+                "    Typed = Table.TransformColumnTypes(BlankDates, {{\"account_id\", type text}, {\"plan_id\", type text}, {\"cohort\", type date}, {\"age_months\", Int64.Type}, {\"retained\", Int64.Type}, {\"cohort_accounts\", Int64.Type}}, \"en-US\")",
+                "in",
+                "    Typed"
+              ]
+            }
+          }
+        ]
+      },
+      {
+        "name": "FactRisk",
+        "columns": [
+          {
+            "name": "account_id",
+            "dataType": "string",
+            "sourceColumn": "account_id",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "plan_id",
+            "dataType": "string",
+            "sourceColumn": "plan_id",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "mrr",
+            "dataType": "double",
+            "sourceColumn": "mrr",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "risk_flag",
+            "dataType": "int64",
+            "sourceColumn": "risk_flag",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "risk_group",
+            "dataType": "string",
+            "sourceColumn": "risk_group",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "failed_30d",
+            "dataType": "double",
+            "sourceColumn": "failed_30d",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "overdue_value",
+            "dataType": "double",
+            "sourceColumn": "overdue_value",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "overdue_invoices",
+            "dataType": "double",
+            "sourceColumn": "overdue_invoices",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "retried_invoices_30d",
+            "dataType": "double",
+            "sourceColumn": "retried_invoices_30d",
+            "summarizeBy": "none"
+          }
+        ],
+        "partitions": [
+          {
+            "name": "FactRisk",
+            "mode": "import",
+            "source": {
+              "type": "m",
+              "expression": [
+                "let",
+                "    Source = Csv.Document(File.Contents(ProjectRoot & \"/data/processed/billing_risk_accounts.csv\"), [Delimiter=\",\", Encoding=65001, QuoteStyle=QuoteStyle.Csv]),",
+                "    Headers = Table.PromoteHeaders(Source, [PromoteAllScalars=true]),",
+                "    Selected = Table.SelectColumns(Headers, {\"account_id\", \"plan_id\", \"mrr\", \"risk_flag\", \"risk_group\", \"failed_30d\", \"overdue_value\", \"overdue_invoices\", \"retried_invoices_30d\"}),",
+                "    BlankDates = Table.ReplaceValue(Selected, \"\", null, Replacer.ReplaceValue, {}),",
+                "    Typed = Table.TransformColumnTypes(BlankDates, {{\"account_id\", type text}, {\"plan_id\", type text}, {\"mrr\", type number}, {\"risk_flag\", Int64.Type}, {\"risk_group\", type text}, {\"failed_30d\", type number}, {\"overdue_value\", type number}, {\"overdue_invoices\", type number}, {\"retried_invoices_30d\", type number}}, \"en-US\")",
+                "in",
+                "    Typed"
+              ]
+            }
+          }
+        ]
+      },
+      {
+        "name": "FactLandmark",
+        "columns": [
+          {
+            "name": "account_id",
+            "dataType": "string",
+            "sourceColumn": "account_id",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "plan_id",
+            "dataType": "string",
+            "sourceColumn": "plan_id",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "landmark",
+            "dataType": "dateTime",
+            "sourceColumn": "landmark",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "risk_group",
+            "dataType": "string",
+            "sourceColumn": "risk_group",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "failed_30d",
+            "dataType": "double",
+            "sourceColumn": "failed_30d",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "overdue_invoices",
+            "dataType": "double",
+            "sourceColumn": "overdue_invoices",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "tenure_at_landmark",
+            "dataType": "int64",
+            "sourceColumn": "tenure_at_landmark",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "churn_next90",
+            "dataType": "int64",
+            "sourceColumn": "churn_next90",
+            "summarizeBy": "none"
+          }
+        ],
+        "partitions": [
+          {
+            "name": "FactLandmark",
+            "mode": "import",
+            "source": {
+              "type": "m",
+              "expression": [
+                "let",
+                "    Source = Csv.Document(File.Contents(ProjectRoot & \"/data/processed/landmark_features.csv\"), [Delimiter=\",\", Encoding=65001, QuoteStyle=QuoteStyle.Csv]),",
+                "    Headers = Table.PromoteHeaders(Source, [PromoteAllScalars=true]),",
+                "    Selected = Table.SelectColumns(Headers, {\"account_id\", \"plan_id\", \"landmark\", \"risk_group\", \"failed_30d\", \"overdue_invoices\", \"tenure_at_landmark\", \"churn_next90\"}),",
+                "    BlankDates = Table.ReplaceValue(Selected, \"\", null, Replacer.ReplaceValue, {\"landmark\"}),",
+                "    Typed = Table.TransformColumnTypes(BlankDates, {{\"account_id\", type text}, {\"plan_id\", type text}, {\"landmark\", type date}, {\"risk_group\", type text}, {\"failed_30d\", type number}, {\"overdue_invoices\", type number}, {\"tenure_at_landmark\", Int64.Type}, {\"churn_next90\", Int64.Type}}, \"en-US\")",
+                "in",
+                "    Typed"
+              ]
+            }
+          }
+        ]
+      }
+    ],
+    "relationships": [
+      {
+        "name": "FactSubscription_DimAccount",
+        "fromTable": "FactSubscription",
+        "fromColumn": "account_id",
+        "toTable": "DimAccount",
+        "toColumn": "account_id",
+        "crossFilteringBehavior": "oneDirection",
+        "fromCardinality": "many",
+        "toCardinality": "one"
+      },
+      {
+        "name": "FactSubscription_DimPlan",
+        "fromTable": "FactSubscription",
+        "fromColumn": "plan_id",
+        "toTable": "DimPlan",
+        "toColumn": "plan_id",
+        "crossFilteringBehavior": "oneDirection",
+        "fromCardinality": "many",
+        "toCardinality": "one"
+      },
+      {
+        "name": "FactMonthlySnapshot_DimAccount",
+        "fromTable": "FactMonthlySnapshot",
+        "fromColumn": "account_id",
+        "toTable": "DimAccount",
+        "toColumn": "account_id",
+        "crossFilteringBehavior": "oneDirection",
+        "fromCardinality": "many",
+        "toCardinality": "one"
+      },
+      {
+        "name": "FactMonthlySnapshot_DimPlan",
+        "fromTable": "FactMonthlySnapshot",
+        "fromColumn": "plan_id",
+        "toTable": "DimPlan",
+        "toColumn": "plan_id",
+        "crossFilteringBehavior": "oneDirection",
+        "fromCardinality": "many",
+        "toCardinality": "one"
+      },
+      {
+        "name": "FactInvoice_DimAccount",
+        "fromTable": "FactInvoice",
+        "fromColumn": "account_id",
+        "toTable": "DimAccount",
+        "toColumn": "account_id",
+        "crossFilteringBehavior": "oneDirection",
+        "fromCardinality": "many",
+        "toCardinality": "one"
+      },
+      {
+        "name": "FactInvoice_DimPlan",
+        "fromTable": "FactInvoice",
+        "fromColumn": "plan_id",
+        "toTable": "DimPlan",
+        "toColumn": "plan_id",
+        "crossFilteringBehavior": "oneDirection",
+        "fromCardinality": "many",
+        "toCardinality": "one"
+      },
+      {
+        "name": "FactPayment_DimAccount",
+        "fromTable": "FactPayment",
+        "fromColumn": "account_id",
+        "toTable": "DimAccount",
+        "toColumn": "account_id",
+        "crossFilteringBehavior": "oneDirection",
+        "fromCardinality": "many",
+        "toCardinality": "one"
+      },
+      {
+        "name": "FactPayment_DimPlan",
+        "fromTable": "FactPayment",
+        "fromColumn": "plan_id",
+        "toTable": "DimPlan",
+        "toColumn": "plan_id",
+        "crossFilteringBehavior": "oneDirection",
+        "fromCardinality": "many",
+        "toCardinality": "one"
+      },
+      {
+        "name": "FactCohort_DimAccount",
+        "fromTable": "FactCohort",
+        "fromColumn": "account_id",
+        "toTable": "DimAccount",
+        "toColumn": "account_id",
+        "crossFilteringBehavior": "oneDirection",
+        "fromCardinality": "many",
+        "toCardinality": "one"
+      },
+      {
+        "name": "FactCohort_DimPlan",
+        "fromTable": "FactCohort",
+        "fromColumn": "plan_id",
+        "toTable": "DimPlan",
+        "toColumn": "plan_id",
+        "crossFilteringBehavior": "oneDirection",
+        "fromCardinality": "many",
+        "toCardinality": "one"
+      },
+      {
+        "name": "FactRisk_DimAccount",
+        "fromTable": "FactRisk",
+        "fromColumn": "account_id",
+        "toTable": "DimAccount",
+        "toColumn": "account_id",
+        "crossFilteringBehavior": "oneDirection",
+        "fromCardinality": "many",
+        "toCardinality": "one"
+      },
+      {
+        "name": "FactRisk_DimPlan",
+        "fromTable": "FactRisk",
+        "fromColumn": "plan_id",
+        "toTable": "DimPlan",
+        "toColumn": "plan_id",
+        "crossFilteringBehavior": "oneDirection",
+        "fromCardinality": "many",
+        "toCardinality": "one"
+      },
+      {
+        "name": "FactLandmark_DimAccount",
+        "fromTable": "FactLandmark",
+        "fromColumn": "account_id",
+        "toTable": "DimAccount",
+        "toColumn": "account_id",
+        "crossFilteringBehavior": "oneDirection",
+        "fromCardinality": "many",
+        "toCardinality": "one"
+      },
+      {
+        "name": "FactLandmark_DimPlan",
+        "fromTable": "FactLandmark",
+        "fromColumn": "plan_id",
+        "toTable": "DimPlan",
+        "toColumn": "plan_id",
+        "crossFilteringBehavior": "oneDirection",
+        "fromCardinality": "many",
+        "toCardinality": "one"
+      },
+      {
+        "name": "FactMonthlySnapshot_DimDate",
+        "fromTable": "FactMonthlySnapshot",
+        "fromColumn": "month_end",
+        "toTable": "DimDate",
+        "toColumn": "date",
+        "crossFilteringBehavior": "oneDirection",
+        "fromCardinality": "many",
+        "toCardinality": "one"
+      },
+      {
+        "name": "FactInvoice_DimDate",
+        "fromTable": "FactInvoice",
+        "fromColumn": "invoice_date",
+        "toTable": "DimDate",
+        "toColumn": "date",
+        "crossFilteringBehavior": "oneDirection",
+        "fromCardinality": "many",
+        "toCardinality": "one"
+      },
+      {
+        "name": "FactPayment_DimDate",
+        "fromTable": "FactPayment",
+        "fromColumn": "attempted_at",
+        "toTable": "DimDate",
+        "toColumn": "date",
+        "crossFilteringBehavior": "oneDirection",
+        "fromCardinality": "many",
+        "toCardinality": "one"
+      }
+    ],
+    "annotations": [
+      {
+        "name": "PBI_QueryOrder",
+        "value": "[\"ProjectRoot\", \"DimAccount\", \"DimPlan\", \"DimDate\", \"FactSubscription\", \"FactMonthlySnapshot\", \"FactInvoice\", \"FactPayment\", \"FactCohort\", \"FactRisk\", \"FactLandmark\"]"
+      },
+      {
+        "name": "PBI_TimeIntelligenceEnabled",
+        "value": "0"
+      }
+    ]
+  }
+}

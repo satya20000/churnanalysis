@@ -1,0 +1,4 @@
+segment,beginning_customers,churned_customers,rate
+SMB,57082,699,0.01224554150169931
+enterprise,4898,59,0.012045732952225397
+mid_market,18922,207,0.010939646971778882

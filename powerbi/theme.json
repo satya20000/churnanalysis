@@ -1,0 +1,26 @@
+{
+  "name": "SaaS Executive",
+  "dataColors": [
+    "#2874A6",
+    "#168A87",
+    "#C75A5A",
+    "#74869C"
+  ],
+  "background": "#F2F5F8",
+  "foreground": "#13253C",
+  "tableAccent": "#2874A6",
+  "textClasses": {
+    "title": {
+      "fontFace": "Segoe UI",
+      "fontSize": 13
+    },
+    "callout": {
+      "fontFace": "Segoe UI",
+      "fontSize": 25
+    },
+    "label": {
+      "fontFace": "Segoe UI",
+      "fontSize": 10
+    }
+  }
+}

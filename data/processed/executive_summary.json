@@ -1,0 +1,43 @@
+{
+  "as_of": "2025-12-31",
+  "accounts": 5000,
+  "active_customers": 4035,
+  "cancelled": 965,
+  "mrr": 1387441.0,
+  "arr": 16649292.0,
+  "dec_logo_churn": 0.01078695758764403,
+  "dec_gross_revenue_churn": 0.009702826838729939,
+  "dec_churned_mrr": 13594.0,
+  "arpa": 343.8515489467162,
+  "risk_mrr": 396533.0,
+  "risk_accounts": 1165,
+  "failed_payment_rate": 0.08232611958252661,
+  "open_invoice_value": 1857721.0,
+  "collected_value": 27639401.0,
+  "collection_rate": 0.9370202625191705,
+  "total_invoiced": 29506774.0,
+  "churned_mrr_all": 342673.0,
+  "avg_churn_tenure_days": 352.6704663212435,
+  "plan_active_mrr": {
+    "Enterprise": 558069.0,
+    "Growth": 272071.0,
+    "Scale": 458912.0,
+    "Starter": 98389.0
+  },
+  "landmark_sept": [
+    {
+      "risk_group": "0 failures",
+      "accounts": 3594,
+      "churned": 125,
+      "churn_90d": 0.03478018920422927
+    },
+    {
+      "risk_group": "1 failure",
+      "accounts": 338,
+      "churned": 11,
+      "churn_90d": 0.03254437869822485
+    }
+  ],
+  "sql_reconciliation": "passed",
+  "bridge_checks": "passed"
+}

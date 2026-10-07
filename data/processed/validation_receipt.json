@@ -1,0 +1,10 @@
+{
+  "model_references": "passed",
+  "visual_field_references": "passed",
+  "page_geometry": "passed",
+  "cohort_censoring": "passed",
+  "survival_edge_case": "passed",
+  "schema_files_passed": 58,
+  "schema_errors": [],
+  "native_powerbi_desktop": "not available; acceptance pending"
+}

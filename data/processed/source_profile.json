@@ -1,0 +1,259 @@
+{
+  "accounts": {
+    "rows": 5000,
+    "columns": 5,
+    "dtypes": {
+      "account_id": "object",
+      "created_at": "datetime64[ns]",
+      "region": "object",
+      "segment": "object",
+      "acquisition_channel": "object"
+    },
+    "missing": {
+      "account_id": 0,
+      "created_at": 0,
+      "region": 0,
+      "segment": 0,
+      "acquisition_channel": 0
+    },
+    "numeric_summary": {},
+    "date_ranges": {
+      "created_at": [
+        "2023-01-01 00:00:00",
+        "2025-09-30 00:00:00"
+      ]
+    },
+    "categories": {
+      "region": {
+        "EMEA": 1259,
+        "LATAM": 1250,
+        "NA": 1247,
+        "APAC": 1244
+      },
+      "segment": {
+        "SMB": 3522,
+        "mid_market": 1173,
+        "enterprise": 305
+      },
+      "acquisition_channel": {
+        "referral": 1040,
+        "partner": 1036,
+        "outbound": 1008,
+        "paid_search": 972,
+        "organic": 944
+      }
+    }
+  },
+  "plans": {
+    "rows": 4,
+    "columns": 4,
+    "dtypes": {
+      "plan_id": "object",
+      "plan_name": "object",
+      "monthly_price": "float64",
+      "included_seats": "int64"
+    },
+    "missing": {
+      "plan_id": 0,
+      "plan_name": 0,
+      "monthly_price": 0,
+      "included_seats": 0
+    },
+    "numeric_summary": {
+      "monthly_price": {
+        "count": 4.0,
+        "mean": 886.5,
+        "std": 1122.775578644281,
+        "min": 49.0,
+        "25%": 161.5,
+        "50%": 499.0,
+        "75%": 1224.0,
+        "max": 2499.0
+      },
+      "included_seats": {
+        "count": 4.0,
+        "mean": 156.25,
+        "std": 232.9297104278456,
+        "min": 5.0,
+        "25%": 16.25,
+        "50%": 60.0,
+        "75%": 200.0,
+        "max": 500.0
+      }
+    },
+    "date_ranges": {},
+    "categories": {
+      "plan_id": {
+        "PLN_STARTER": 1,
+        "PLN_GROWTH": 1,
+        "PLN_SCALE": 1,
+        "PLN_ENTERPRISE": 1
+      },
+      "plan_name": {
+        "Starter": 1,
+        "Growth": 1,
+        "Scale": 1,
+        "Enterprise": 1
+      }
+    }
+  },
+  "subscriptions": {
+    "rows": 5000,
+    "columns": 8,
+    "dtypes": {
+      "subscription_id": "object",
+      "account_id": "object",
+      "plan_id": "object",
+      "started_at": "datetime64[ns]",
+      "ended_at": "datetime64[ns]",
+      "status": "object",
+      "seats": "int64",
+      "mrr": "float64"
+    },
+    "missing": {
+      "subscription_id": 0,
+      "account_id": 0,
+      "plan_id": 0,
+      "started_at": 0,
+      "ended_at": 4035,
+      "status": 0,
+      "seats": 0,
+      "mrr": 0
+    },
+    "numeric_summary": {
+      "seats": {
+        "count": 5000.0,
+        "mean": 37.9108,
+        "std": 82.76199824213168,
+        "min": 1.0,
+        "25%": 4.0,
+        "50%": 7.0,
+        "75%": 23.0,
+        "max": 524.0
+      },
+      "mrr": {
+        "count": 5000.0,
+        "mean": 346.0228,
+        "std": 587.5938134273332,
+        "min": 49.0,
+        "25%": 49.0,
+        "50%": 199.0,
+        "75%": 223.0,
+        "max": 2595.0
+      }
+    },
+    "date_ranges": {
+      "started_at": [
+        "2023-01-04 00:00:00",
+        "2025-10-29 00:00:00"
+      ],
+      "ended_at": [
+        "2023-04-26 00:00:00",
+        "2025-12-30 00:00:00"
+      ]
+    },
+    "categories": {
+      "plan_id": {
+        "PLN_STARTER": 2433,
+        "PLN_GROWTH": 1609,
+        "PLN_SCALE": 675,
+        "PLN_ENTERPRISE": 283
+      },
+      "status": {
+        "active": 4035,
+        "cancelled": 965
+      }
+    }
+  },
+  "invoices": {
+    "rows": 85448,
+    "columns": 6,
+    "dtypes": {
+      "invoice_id": "object",
+      "subscription_id": "object",
+      "invoice_date": "datetime64[ns]",
+      "due_date": "datetime64[ns]",
+      "amount_due": "float64",
+      "invoice_status": "object"
+    },
+    "missing": {
+      "invoice_id": 0,
+      "subscription_id": 0,
+      "invoice_date": 0,
+      "due_date": 0,
+      "amount_due": 0,
+      "invoice_status": 0
+    },
+    "numeric_summary": {
+      "amount_due": {
+        "count": 85448.0,
+        "mean": 345.3184860968074,
+        "std": 585.6077025198629,
+        "min": 49.0,
+        "25%": 49.0,
+        "50%": 199.0,
+        "75%": 223.0,
+        "max": 2595.0
+      }
+    },
+    "date_ranges": {
+      "invoice_date": [
+        "2023-01-04 00:00:00",
+        "2025-12-28 00:00:00"
+      ],
+      "due_date": [
+        "2023-01-19 00:00:00",
+        "2025-12-31 00:00:00"
+      ]
+    },
+    "categories": {
+      "invoice_status": {
+        "paid": 80101,
+        "open": 5311,
+        "void": 36
+      }
+    }
+  },
+  "payments": {
+    "rows": 87287,
+    "columns": 5,
+    "dtypes": {
+      "payment_id": "object",
+      "invoice_id": "object",
+      "attempted_at": "datetime64[ns]",
+      "payment_status": "object",
+      "amount": "float64"
+    },
+    "missing": {
+      "payment_id": 0,
+      "invoice_id": 0,
+      "attempted_at": 0,
+      "payment_status": 0,
+      "amount": 0
+    },
+    "numeric_summary": {
+      "amount": {
+        "count": 87287.0,
+        "mean": 344.8397241284498,
+        "std": 584.5325915171868,
+        "min": 49.0,
+        "25%": 49.0,
+        "50%": 199.0,
+        "75%": 223.0,
+        "max": 2595.0
+      }
+    },
+    "date_ranges": {
+      "attempted_at": [
+        "2023-01-06 00:00:00",
+        "2025-12-29 00:00:00"
+      ]
+    },
+    "categories": {
+      "payment_status": {
+        "succeeded": 80101,
+        "failed": 7186
+      }
+    }
+  }
+}

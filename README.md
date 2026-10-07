@@ -67,3 +67,5 @@ Open `notebooks/01_saas_churn_analysis.ipynb` for executed cells and inline figu
 Analytics Engineering, **SaaS Subscriptions & Customer Churn Dataset v1.0.0**, coverage January 2023–December 2025, **CC BY 4.0**. [Original dataset](https://www.analyticsengineering.com/datasets/saas-subscriptions). Attribution and original license are preserved in `data/raw`. Monetary amounts are **CU** because source currency is unspecified.
 
 Tools executed: Python, pandas, NumPy, matplotlib, SQLite SQL and Git. Power BI PBIR/model/DAX authored; Desktop execution pending. No usage events, historical plan changes, reactivations or dated void/status changes are available. True NRR, expansion/contraction and causal billing effects cannot be established. Kaplan–Meier assumes independent censoring; landmark groups are observational and may be confounded. Terminal-month billing and acquisition cutoff need caution.
+
+The monthly account snapshot is stored as lossless CSV gzip (`subscription_monthly_snapshot.csv.gz`). Power Query decompresses it automatically; the Python pipeline regenerates both forms.

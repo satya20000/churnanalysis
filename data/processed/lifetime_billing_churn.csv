@@ -1,0 +1,4 @@
+failure_group,accounts,churned,mean_tenure
+0 failures,1496,369,322.7947860962567
+1 failure,1492,339,451.1159517426274
+2+ failures,2012,257,680.6356858846918

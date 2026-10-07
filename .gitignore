@@ -1,0 +1,14 @@
+__pycache__/
+.venv/
+.ipynb_checkpoints/
+*.abf
+**/.pbi/
+data/source.zip
+data/processed/*.sqlite
+powerbi/local_path.txt
+
+data/processed/*.sqlite-*
+
+data/processed/project_validation.json
+
+data/processed/subscription_monthly_snapshot.csv

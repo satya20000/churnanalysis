@@ -1,0 +1,89 @@
+Active Customers =
+VAR d = MAX(FactMonthlySnapshot[month_end]) RETURN CALCULATE(SUM(FactMonthlySnapshot[active_customers]), KEEPFILTERS(FactMonthlySnapshot[month_end] = d))
+
+Beginning Customers =
+SUM(FactMonthlySnapshot[beginning_customers])
+
+New Customers =
+SUM(FactMonthlySnapshot[new_customers])
+
+Churned Customers =
+SUM(FactMonthlySnapshot[churned_customers])
+
+Customer Churn Rate =
+DIVIDE([Churned Customers], [Beginning Customers])
+
+Customer Retention Rate =
+IF(NOT ISBLANK([Customer Churn Rate]), 1 - [Customer Churn Rate])
+
+MRR =
+VAR d = MAX(FactMonthlySnapshot[month_end]) RETURN CALCULATE(SUM(FactMonthlySnapshot[active_mrr]), KEEPFILTERS(FactMonthlySnapshot[month_end] = d))
+
+ARR =
+[MRR] * 12
+
+Beginning MRR =
+SUM(FactMonthlySnapshot[beginning_mrr])
+
+Churned MRR =
+SUM(FactMonthlySnapshot[churned_mrr])
+
+Gross Revenue Churn =
+DIVIDE([Churned MRR], [Beginning MRR])
+
+Gross Revenue Retention =
+IF(NOT ISBLANK([Gross Revenue Churn]), 1 - [Gross Revenue Churn])
+
+ARPA =
+DIVIDE([MRR], [Active Customers])
+
+Average Churn Tenure Days =
+DIVIDE(SUM(FactMonthlySnapshot[churned_tenure_days]), [Churned Customers])
+
+Payment Attempts =
+COUNTROWS(FactPayment)
+
+Failed Payments =
+CALCULATE(COUNTROWS(FactPayment), FactPayment[payment_status] = "failed")
+
+Succeeded Payments =
+CALCULATE(COUNTROWS(FactPayment), FactPayment[payment_status] = "succeeded")
+
+Failed Payment Rate =
+DIVIDE([Failed Payments], [Payment Attempts])
+
+Accounts With Failed Payments =
+CALCULATE(DISTINCTCOUNT(FactPayment[account_id]), FactPayment[payment_status] = "failed")
+
+Invoiced Value =
+SUM(FactInvoice[amount_due])
+
+Collected Value =
+CALCULATE(SUM(FactPayment[amount]), FactPayment[payment_status] = "succeeded")
+
+Open Invoice Value =
+CALCULATE(SUM(FactInvoice[amount_due]), FactInvoice[invoice_status] = "open")
+
+MRR at Risk =
+VAR d = MAX(FactMonthlySnapshot[month_end]) RETURN CALCULATE(SUM(FactMonthlySnapshot[mrr_at_risk]), KEEPFILTERS(FactMonthlySnapshot[month_end] = d))
+
+Risk Accounts =
+VAR d = MAX(FactMonthlySnapshot[month_end]) RETURN CALCULATE(SUM(FactMonthlySnapshot[risk_accounts]), KEEPFILTERS(FactMonthlySnapshot[month_end] = d))
+
+Cohort Retention =
+DIVIDE(SUM(FactCohort[retained]), SUM(FactCohort[cohort_accounts]))
+
+Landmark Churn 90d =
+DIVIDE(SUM(FactLandmark[churn_next90]), COUNTROWS(FactLandmark))
+
+Landmark Accounts =
+COUNTROWS(FactLandmark)
+
+Latest Priority MRR =
+CALCULATE(SUM(FactRisk[mrr]), FactRisk[risk_flag] = 1)
+
+Priority Failed Attempts =
+IF(NOT ISBLANK([Latest Priority MRR]), SUM(FactRisk[failed_30d]))
+
+Priority Mature Balance =
+IF(NOT ISBLANK([Latest Priority MRR]), SUM(FactRisk[overdue_value]))

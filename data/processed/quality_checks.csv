@@ -1,0 +1,30 @@
+check,passed,detail
+accounts primary key,True,5000
+accounts duplicate rows,True,0
+accounts required fields,True,"{'account_id': 0, 'created_at': 0, 'region': 0, 'segment': 0, 'acquisition_channel': 0}"
+plans primary key,True,4
+plans duplicate rows,True,0
+plans required fields,True,"{'plan_id': 0, 'plan_name': 0, 'monthly_price': 0, 'included_seats': 0}"
+subscriptions primary key,True,5000
+subscriptions duplicate rows,True,0
+subscriptions required fields,True,"{'subscription_id': 0, 'account_id': 0, 'plan_id': 0, 'started_at': 0, 'ended_at': 4035, 'status': 0, 'seats': 0, 'mrr': 0}"
+invoices primary key,True,85448
+invoices duplicate rows,True,0
+invoices required fields,True,"{'invoice_id': 0, 'subscription_id': 0, 'invoice_date': 0, 'due_date': 0, 'amount_due': 0, 'invoice_status': 0}"
+payments primary key,True,87287
+payments duplicate rows,True,0
+payments required fields,True,"{'payment_id': 0, 'invoice_id': 0, 'attempted_at': 0, 'payment_status': 0, 'amount': 0}"
+subscriptions account_id foreign key,True,All parents exist
+subscriptions plan_id foreign key,True,All parents exist
+invoices subscription_id foreign key,True,All parents exist
+payments invoice_id foreign key,True,All parents exist
+one subscription per account,True,5000
+end after start,True,Cancellation effective on ended_at
+status agrees with dates,True,"{'active': 4035, 'cancelled': 965}"
+positive subscription values,True,MRR and seats
+positive billed and attempted values,True,No negative amounts
+due date on or after invoice,True,Date ordering
+attempt not before invoice,True,Payment timeline
+successful collection not above due,True,Retry attempts are not revenue
+paid invoices reconcile,True,Exact successful payment value
+source within coverage,True,Last observed date 2025-12-31
